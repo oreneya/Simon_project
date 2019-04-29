@@ -37,7 +37,7 @@ class Visualize:
 #print("Sample # %d" %sample_num)
 #pic = Visualize(pics_in[sample_num], out_vectors[sample_num])
 #pic.printout()
-
+'''
 # create & train an instance of '2 not-2' neural network
 train_data = Readata("digits_train.txt")
 train_pics = train_data.pics_in
@@ -46,7 +46,7 @@ train_targets = np.argmax(train_targets, axis=1) == 2
 inst2not2 = Backprop(196, 1, 20)
 inst2not2.train(train_pics, train_targets, niter=1000, eta=10.)
 inst2not2.save(flname="part2.wgt")
-
+'''
 # create & test an instance of '2 not-2' neural network
 inst2not2 = Backprop(196, 1, 20)
 inst2not2.load(flname="part2.wgt")
