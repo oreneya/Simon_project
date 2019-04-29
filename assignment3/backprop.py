@@ -1,4 +1,6 @@
 import numpy as np
+import pickle
+from sys import stdout
 
 class Backprop:
     def __init__(self, n, m, h):
@@ -54,4 +56,16 @@ class Backprop:
                 dwho += np.outer(H, O_err)
             self.wih += eta * dwih / len(I)
             self.who += eta * dwho / len(I)
-return self.wih, self.who 
+            # track progress
+            stdout.write('\r')
+            stdout.write("%-12s %.1f%%" % ('Training progress... ',100*i/niter))
+            stdout.flush()
+        return self.wih, self.who
+    
+    def save(self, flname):
+        pickle.dump([self.wih, self.who], open(flname, "wb"))
+    
+    def load(self, flname):
+        weights = pickle.load(open(flname, "rb"))
+        self.wih = weights[0]
+        self.who = weights[1]
