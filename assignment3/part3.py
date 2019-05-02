@@ -13,7 +13,7 @@ class Readata:
 		for i in range(NOS):
 			# track progress
 			stdout.write('\r')
-			stdout.write("%-12s %.1f%%" % ('Training progress... ',100*i/NOS))
+			stdout.write("%-12s %.1f%%" % ('Reading progress... ',100*i/NOS))
 			stdout.flush()
 			
 			out_vector = np.array(lines[15::16][i].split()).astype('int')
@@ -22,7 +22,7 @@ class Readata:
 				self.pics_in = np.append(self.pics_in, np.array(lines[16*i+j].split()).astype('float'))
 		self.out_vectors = self.out_vectors.reshape(NOS, 10)
 		self.pics_in = self.pics_in.reshape(NOS, 14*14)
-		print("Read %d patterns" %NOS)
+		print("\nRead %d patterns" %NOS)
 
 class Visualize:
     def __init__(self, arr, target):
@@ -67,8 +67,9 @@ for i in range(10):
 	conf_mat[i] = np.sum(res[i*250:(i+1)*250], axis=0)
 
 # print summary
-print("Part 3 - confusion matrix\n")
+print("\nPart 3 - confusion matrix\n")
 print(conf_mat)
-
+accuracy = sum(conf_mat.diagonal()) / len(test_targets)
+print("\nAccuracy: %.2f" %accuracy)
 
 
