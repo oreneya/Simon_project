@@ -4,7 +4,7 @@
 
 
 ## Test accuracies
-* Logistic regression with 100 epochs:                                   0.9222
+* Logistic regression with 100 epochs:                             ---:      0.9222
 * Original (two hidden layers) multilayer perceptron with 1000 epochs:   0.8834
 * Original (two hidden layers) multilayer perceptron with 100 epochs:    0.9773
 * Modified (one hidden layer) multilayer perceptron with 100 epochs: 
