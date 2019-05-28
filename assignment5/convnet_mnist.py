@@ -10,7 +10,7 @@ n_hidden_2 = 256
 
 # Parameters
 learning_rate = 0.0001
-training_epochs = 1#0
+training_epochs = 10
 batch_size = 100
 display_step = 1
 
