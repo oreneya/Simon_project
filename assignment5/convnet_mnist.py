@@ -10,7 +10,7 @@ n_hidden_2 = 256
 
 # Parameters
 learning_rate = 0.0001
-training_epochs = 10
+training_epochs = 1#0
 batch_size = 100
 display_step = 1
 
@@ -146,3 +146,10 @@ if __name__ == '__main__':
                 accuracy = sess.run(eval_op, feed_dict={x: mnist.test.images, y: mnist.test.labels, keep_prob: 1})
 
                 print("Test Accuracy:", accuracy)
+
+                #confusion matrix
+                y_test = sess.run(output, feed_dict={x: mnist.test.images, keep_prob: 1})
+                true_class = tf.argmax(mnist.test.labels, 1)
+                predicted_class = tf.argmax(y_test, 1)
+                con = tf.confusion_matrix(labels=true_class, predictions=predicted_class)
+                print(sess.run(con))
