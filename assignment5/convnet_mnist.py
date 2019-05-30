@@ -1,8 +1,8 @@
+import tensorflow as tf
+import pandas as pd
+
 import input_data
 mnist = input_data.read_data_sets("../assignment4/data/", one_hot=True)
-
-import tensorflow as tf
-import time
 
 # Architecture
 n_hidden_1 = 256
@@ -152,4 +152,6 @@ if __name__ == '__main__':
                 true_class = tf.argmax(mnist.test.labels, 1)
                 predicted_class = tf.argmax(y_test, 1)
                 con = tf.confusion_matrix(labels=true_class, predictions=predicted_class)
-                print(sess.run(con))
+                tf_con = sess.run(con)
+                df = pd.DataFrame(tf_con)
+                print(df)
