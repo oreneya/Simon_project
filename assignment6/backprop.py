@@ -57,9 +57,8 @@ class Backprop:
                 self.wih += eta * dwih / len(I)
                 self.who += eta * dwho / len(I)
             # track progress
-            stdout.write('\r')
-            stdout.write("%-12s %.1f%%" % ('Training progress... ',100*i/niter))
-            stdout.flush()
+            print("\nIteration {}/{}".format(i, niter))
+            print("RMSE: {:.4f}".format(np.linalg.norm((T-O)/len(I))))            
         return self.wih, self.who
     
     def save(self, flname):
