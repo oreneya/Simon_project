@@ -39,28 +39,41 @@ class Backprop:
         O = self.squash(O_net)
         return O
 
-    def train(self, I, T, niter=1000, eta=.5):
+    def train(self, I, T, niter=1000, eta=.5, report=1000):
+
         I = np.hstack((I, np.ones((len(I),1))))
+
         for i in range(niter):
-            dwih = np.zeros(self.wih.shape)
-            dwho = np.zeros(self.who.shape)
+
+            sumerr = 0
+
             for j in range(len(I)):
+
                 H_net = np.dot(I[j], self.wih)
                 H = self.squash(H_net)
                 H = np.append(H, 1)
+
                 O_net = np.dot(H, self.who)
                 O = self.squash(O_net)
+
                 O_err = (T[j]-O) * self.dsquash(O_net)
+
+                # Sum the squared error over the output units
+                sumerr += np.sum(O_err**2)
+
                 H_err = np.dot(O_err, self.who.T)[:-1] * self.dsquash(H_net)
-                dwih += np.outer(I[j], H_err)
-                dwho += np.outer(H, O_err)
-                self.wih += eta * dwih / len(I)
-                self.who += eta * dwho / len(I)
-            # track progress
-            print("\nIteration {}/{}".format(i, niter))
-            print("RMSE: {:.4f}".format(np.linalg.norm((T-O)/len(I))))            
-        return self.wih, self.who
-    
+
+                self.wih += eta * np.outer(I[j], H_err)
+                self.who += eta * np.outer(H, O_err)
+
+            if i%report == 0:
+
+                # Divide sum-squared error by number of patterns time output size.
+                # RMS error is then the square root of this value.
+                rmserr = np.sqrt(sumerr / (len(I)*self.m))
+                print('Iter: %5d RMS err: %6.6f ' % (i, rmserr))
+                stdout.flush()
+
     def save(self, flname):
         pickle.dump([self.wih, self.who], open(flname, "wb"))
     
