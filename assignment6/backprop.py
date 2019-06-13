@@ -56,15 +56,17 @@ class Backprop:
                 O_net = np.dot(H, self.who)
                 O = self.squash(O_net)
 
-                O_err = (T[j]-O) * self.dsquash(O_net)
+                O_err = (T[j]-O) 
+                O_del = O_err * self.dsquash(O_net)
 
                 # Sum the squared error over the output units
                 sumerr += np.sum(O_err**2)
 
-                H_err = np.dot(O_err, self.who.T)[:-1] * self.dsquash(H_net)
+                H_err = np.dot(O_del, self.who.T)[:-1] 
+                H_del = H_err * self.dsquash(H_net)
 
-                self.wih += eta * np.outer(I[j], H_err)
-                self.who += eta * np.outer(H, O_err)
+                self.wih += eta * np.outer(I[j], H_del)
+                self.who += eta * np.outer(H, O_del)
 
             if i%report == 0:
 
