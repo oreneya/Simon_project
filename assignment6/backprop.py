@@ -56,7 +56,7 @@ class Backprop:
                 O_net = np.dot(H, self.who)
                 O = self.squash(O_net)
 
-                O_err = (T[j]-O) 
+                O_err = T[j] - O 
                 O_del = O_err * self.dsquash(O_net)
 
                 # Sum the squared error over the output units

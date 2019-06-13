@@ -19,10 +19,7 @@ def shift(x):
 # create & train an instance of 'XOR' neural network
 bp = Backprop(1, 1, 20)
 inputs = xorseq(1000)
-#targets = shift(inputs)
-
-inputs = np.random.randint(0, 2, (1000,1))
-targets = np.random.randint(0, 2, (1000,1)) 
+targets = shift(inputs)
 
 bp.train(inputs, targets, niter=100, eta=0.5, report=10)
 
