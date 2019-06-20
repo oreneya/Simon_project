@@ -7,7 +7,7 @@ class SRN:
         self.n = n # number of inputs
         self.m = m # number of outputs
         self.h = h # number of hidden units
-        self.wih = np.random.uniform(low=-0.05, high=0.05, size=(n+1,h))
+        self.wih = np.random.uniform(low=-0.05, high=0.05, size=(n+h+1,h))
         self.who = np.random.uniform(low=-0.05, high=0.05, size=(h+1,m))
 
     def __str__(self):
@@ -46,11 +46,15 @@ class SRN:
         for i in range(niter):
 
             sumerr = 0
+            # initialize copy of hidden layer activations
+            context_units = np.zeros(self.h)
 
             for j in range(len(I)):
 
-                H_net = np.dot(I[j], self.wih)
+                extended_input = np.append(I[j], context_units)
+                H_net = np.dot(extended_input, self.wih)
                 H = self.squash(H_net)
+                context_units = H
                 H = np.append(H, 1)
 
                 O_net = np.dot(H, self.who)
@@ -65,7 +69,8 @@ class SRN:
                 H_err = np.dot(O_del, self.who.T)[:-1] 
                 H_del = H_err * self.dsquash(H_net)
 
-                self.wih += eta * np.outer(I[j], H_del)
+                #self.wih += eta * np.outer(I[j], H_del)
+                self.wih += eta * np.outer(extended_input, H_del)
                 self.who += eta * np.outer(H, O_del)
 
             if i%report == 0:
@@ -75,7 +80,7 @@ class SRN:
                 rmserr = np.sqrt(sumerr / (len(I)*self.m))
                 print('Iter: %5d RMS err: %6.6f ' % (i, rmserr))
                 stdout.flush()
-
+                
     def save(self, flname):
         pickle.dump([self.wih, self.who], open(flname, "wb"))
     
