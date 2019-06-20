@@ -32,7 +32,7 @@ class SRN:
             return V >= 0
     
     def test(self, I):
-        H_net = np.dot(np.append(I, 1), self.wih)
+        H_net = np.dot(np.append(I, 1), self.wih[:self.n+1])
         H = self.squash(H_net)
         H = np.append(H, 1)
         O_net = np.dot(H, self.who)
