@@ -3,23 +3,31 @@ from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 import pandas as pd
 
-a = pd.read_csv('raw_cleaned.csv')
+#a = pd.read_csv('raw_cleaned.csv')
+a = pd.read_csv('raw_weekend.csv')
+
+# cleaning nan columns
+for col in a.keys(): 
+    if pd.isnull(a[col][0]): 
+        del a[col]
 
 # choose serial number
-def SN(n):
-    return a.loc[a['Serial Number'] == 'SN'+str(n)]
+def SN(sn):
+    return a.loc[a['Serial Number'] == sn]#'SN{:02d}'.format(n)]
 
-aa = SN(1)
+aa = SN('SN01')
 
 # choose parameter
+#parameters = a['Parameter'][-10:]
+#parameter = parameters[0]
 parameter = 'CDI - Avg Wall Cell Thickness'
 #parameter = 'CDI - Distance'
 lower_limit = aa.loc[aa.Parameter == parameter]['Lower Limit']
 upper_limit = aa.loc[aa.Parameter == parameter]['Upper Limit']
 
-for i in range(1,11):
-    label = 'SN'+str(i)
-    aa = SN(i)
+for sn in a['Serial Number'].unique():
+    label = sn
+    aa = SN(sn)
     x = aa.loc[aa.Parameter == parameter]['CycleCount']
     y = aa.loc[aa.Parameter == parameter]['Measurement AVG']
     if x.shape[0]:
