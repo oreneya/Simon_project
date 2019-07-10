@@ -6,6 +6,13 @@ by Eyal Oren and Mor Hananovitz
 ## Data structure
 ## Program's Workflow
 ## Model
+## Dependencies
+	- pandas
+	- matplotlib
+	- keras
+	- tensorflow 1.x
+	
+## ------------
 
 ## Introduction 
 In this work we will demonstrate failure prediction model based on previously collected data.
