@@ -5,15 +5,12 @@ by Eyal Oren and Mor Hananovitz
 In this work we will demonstrate failure prediction model based on previously collected data.
 As technology evolves, processes improves, but not everything is changing. We shall take information collected on parts used since 2013 and implement on the same parts used today.
 
-<img src="trend_example.png" align="center" width=700>
-<img src=“part.JPG” align=“center” width=700>
-
+<img src=part.JPG align="center" width=700>
 Fig. 1 Part in Question
 
   - Inputs: Time series (i.e CycleCounts) of the average measured value
 
-#<img src=“trend_example.png” align=“center” width=700>
-
+<img src=trend_example.png align=“center” width=700>
 Fig. 2 Trend Example
   - Features: Parameters collected based on part's manufacture specs
   - Output: Behavioural prediction in the form of a graph to demonstrate next steps of the part
