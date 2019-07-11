@@ -2,17 +2,20 @@ import matplotlib.pyplot as plt
 from matplotlib import rcParams
 rcParams.update({'figure.autolayout': True})
 
-def visuals(parameter, lo_lim, up_lim):
+def data(property):
+	
+	for sn in property.serial_numbers:
+		plt.plot(sn.x, sn.y, 'o-', label=sn.name)
 
-	plt.plot(plt.xlim(), [lo_lim,lo_lim], 'r--')
-	plt.plot(plt.xlim(), [up_lim,up_lim], 'r--')
-	
+	plt.plot(plt.xlim(), [property.lower_limit, property.lower_limit], 'r--')
+	plt.plot(plt.xlim(), [property.upper_limit, property.upper_limit], 'r--')
+
 	plt.xlabel('CycleCount', fontsize=15)
-	plt.ylabel(parameter, fontsize=15)
-	
-	plt.title(parameter)
-	plt.legend(numpoints=1, loc='best')#, loc='center left', bbox_to_anchor=(1.,0.5))
+	plt.ylabel('Measurement AVG', fontsize=15)
+
+	plt.title(property.name)
+	plt.legend(numpoints=1, loc='best')
 	plt.tick_params(axis='both', labelsize=15)
 	plt.grid(color='lightgray', linestyle='--')
-	
+
 	plt.show()
