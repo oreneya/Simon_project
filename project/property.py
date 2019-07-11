@@ -9,15 +9,15 @@ class Property(object):
 		self.serial_numbers = []
 	
 	def train(self, data_to_train):
-		"""Train method takes several time serieses to train on."""
+		"""Train method takes several time-serieses to train on."""
 		self.data_to_train = data_to_train
 
 	def validate(self, data_to_validate):
-		"""Validate method takes several time serieses to validate with."""
+		"""Validate method takes several time-serieses to validate with."""
 		self.data_to_validate = data_to_validate
 
 	def predict(self, data_to_predict):
-		"""Predict method takes one time series to predict its future."""
+		"""Predict method takes one time-series to predict its future."""
 		self.data_to_predict = data_to_predict
 
 class SerialNumber(object):
