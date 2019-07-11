@@ -4,7 +4,7 @@ import property
 def read_training_data(train_data):
 
 	# read file
-	a = pd.read_csv('../data/'+train_data)
+	a = pd.read_csv('./data/'+train_data)
 
 	# clean nan columns
 	for col in a.keys(): 
