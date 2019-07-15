@@ -2,16 +2,27 @@
 by Eyal Oren and Mor Hananovitz
 
 ## Background / Intro
+
 ## Project's goal
-## Data structure
+To develop a program able to predict when a given physical part (i.e. has its own serial number) will fail quality control tests. The program accomplishes that by generating a forcast of various properties into the future, where each property is allowed to experience changes within given limits. Failure is declared at the moment one of the properties exceeds one of its limits.
+
+## Exploratory Data Analysis
+	### Data Structure
+	### Let's see it
+
 ## Program's Workflow
 ## Model
+LSTM based, multi-step prediction.
+Input:
+Output:
+
 ## Dependencies
-	- pandas
-	- matplotlib
-	- keras
-	- tensorflow 1.x
-	
+	* numpy
+	* pandas
+	* matplotlib
+	* keras 2.x.x
+	* tensorflow 1.x.x
+
 ## ------------
 
 ## Introduction 
@@ -38,4 +49,4 @@ Those part (Serial Numbers 1-10) were uses as the base line, training set, to ou
 Additional 10 parts were tested (Serial Numbers 11-20) that had low CycleCount, shorter time series, that will supply the testing data to our model. 
 
 ## How To Run The Model?
-All you have to do it load attached CSV file and the model will do the rest!
+All you have to do is to load attached CSV file and the model will do the rest!
