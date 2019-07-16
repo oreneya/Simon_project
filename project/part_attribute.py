@@ -28,35 +28,33 @@ class PartAttribute(object):
 		lin = 10 # length of time-series as input
 		lout = 8 # length of output vector
 		
-		x_train = np.array([])
-		y_train = np.array([])
+		x_train = []
+		y_train = []
 		
 		for sn in self.data_to_train:
 			for i in range(1+len(sn.measurement.values[:-(lin+lout)])):
-				x_train = np.append(x_train, sn.measurement.values[i:i+lin])
-				y_train = np.append(y_train, sn.measurement.values[i+lin:i+lin+lout])
+				x_train.append(list(sn.measurement.values[i:i+lin]))
+				y_train.append(list(sn.measurement.values[i+lin:i+lin+lout]))
 		
-		x_train = x_train.reshape(len(x_train) / lin, lin)
-		print(x_train.shape)
-		y_train = y_train.reshape(len(y_train) / lout, lout)
-		print(y_train.shape)
-				
-		x_val = np.array([])
-		y_val = np.array([])
+		x_train = np.reshape(x_train, (len(x_train), lin, 1))
+		y_train = np.reshape(y_train, (len(y_train), lout))
+						
+		x_val = []
+		y_val = []
 		
 		sn = self.data_to_validate
 		for i in range(1+len(sn.measurement.values[:-(lin+lout)])):
-			x_val = np.append(x_val, sn.measurement.values[i:i+lin])
-			y_val = np.append(y_val, sn.measurement.values[i+lin:i+lin+lout])
+			x_val.append(list(sn.measurement.values[i:i+lin]))
+			y_val.append(list(sn.measurement.values[i+lin:i+lin+lout]))
 		
-		x_val = x_val.reshape(len(x_val) / lin, lin)
-		y_val = y_val.reshape(len(y_val) / lout, lout)
+		x_val = np.reshape(x_val, (len(x_val), lin))
+		y_val = np.reshape(y_val, (len(y_val), lout))
 		
 		# model
 		num_units = 4 # number of neurons to the hidden layer
 
 		model = Sequential()
-		model.add(LSTM(num_units, input_shape=(x_train.shape[0], lin)))
+		model.add(LSTM(num_units, input_shape=(x_train.shape[1], 1)))
 		model.add(Dense(lout))
 		model.compile(loss='mean_squared_error', optimizer='adam')
 		model.fit(x_train, y_train, epochs=10)#, validation_data=(x_val, y_val))
