@@ -14,15 +14,15 @@ class PartAttribute(object):
 	
 	def train(self, sn_train_idx, sn_valid_idx):
 		"""Train method takes several time-serieses to train on, and others to validate on."""
-		self.data_to_train = np.array([])
-		self.data_to_validate = np.array([])
+		self.data_to_train = []
+		self.data_to_validate = []
 
 		# fill data structure to train with
 		for i in sn_train_idx:
-			self.data_to_train = np.append(self.data_to_train, self.serial_numbers[i])
+			self.data_to_train.append(list(self.serial_numbers[i].measurement.values))
 
 		# fill data structure to validate with
-		self.data_to_validate = self.serial_numbers[sn_valid_idx]
+		self.data_to_validate = list(self.serial_numbers[sn_valid_idx].measurement.values)
 
 		# prepare data for supervised training
 		lin = 10 # length of time-series as input
@@ -32,9 +32,10 @@ class PartAttribute(object):
 		y_train = []
 		
 		for sn in self.data_to_train:
-			for i in range(1+len(sn.measurement.values[:-(lin+lout)])):
-				x_train.append(list(sn.measurement.values[i:i+lin]))
-				y_train.append(list(sn.measurement.values[i+lin:i+lin+lout]))
+			#sn_history = standardize(sn_history)
+			for i in range(1+len(sn[:-(lin+lout)])):
+				x_train.append(sn[i:i+lin])
+				y_train.append(sn[i+lin:i+lin+lout])
 		
 		x_train = np.reshape(x_train, (len(x_train), lin, 1))
 		y_train = np.reshape(y_train, (len(y_train), lout))
@@ -43,11 +44,11 @@ class PartAttribute(object):
 		y_val = []
 		
 		sn = self.data_to_validate
-		for i in range(1+len(sn.measurement.values[:-(lin+lout)])):
-			x_val.append(list(sn.measurement.values[i:i+lin]))
-			y_val.append(list(sn.measurement.values[i+lin:i+lin+lout]))
+		for i in range(1+len(sn[:-(lin+lout)])):
+			x_val.append(sn[i:i+lin])
+			y_val.append(sn[i+lin:i+lin+lout])
 		
-		x_val = np.reshape(x_val, (len(x_val), lin))
+		x_val = np.reshape(x_val, (len(x_val), lin, 1))
 		y_val = np.reshape(y_val, (len(y_val), lout))
 		
 		# model
@@ -57,7 +58,7 @@ class PartAttribute(object):
 		model.add(LSTM(num_units, input_shape=(x_train.shape[1], 1)))
 		model.add(Dense(lout))
 		model.compile(loss='mean_squared_error', optimizer='adam')
-		model.fit(x_train, y_train, epochs=10)#, validation_data=(x_val, y_val))
+		model.fit(x_train, y_train, epochs=10, validation_data=(x_val, y_val))
 		return self, model
 
 	def predict(self, data_to_predict):
