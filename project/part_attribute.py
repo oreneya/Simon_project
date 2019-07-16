@@ -15,10 +15,10 @@ class PartAttribute(object):
 	
 	def standardize(self):
 		"""Standardize training data for neural network and keep operator/inverse for future."""
-		X = self.data_to_train
-		X_std = (X - min(X)) / (max(X) - min(X))
-		min, max = -1, 1 # range due to tanh in the LSTM (default)
-		X_scaled = X_std * (max - min) + min
+		X = np.array(self.data_to_train)
+		X_std = (X.ravel() - np.min(X)) / (np.max(X) - np.min(X))
+		rmin, rmax = -1, 1 # range due to tanh in the LSTM (default)
+		X_scaled = X_std * (rmax - rmin) + rmin
 		#scaler = MinMaxScaler(feature_range=(-1, 1)) # range due to tanh in the LSTM (default)
 		#scaler.fit(self.data_to_train)
 		self.data_to_train = X_scaled
