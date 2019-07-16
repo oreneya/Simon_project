@@ -1,5 +1,5 @@
 import pandas as pd
-import property
+import part_attribute
 
 def read_training_data(train_data):
 
@@ -41,8 +41,8 @@ def load(training_file):
 		lower_limit = data.loc[data.Parameter == parameter]['Lower Limit'].unique()
 		upper_limit = data.loc[data.Parameter == parameter]['Upper Limit'].unique()
 
-		# instantiate property/parameter
-		p.append(property.Property(parameter, lower_limit, upper_limit))
+		# instantiate part_attribute/parameter
+		p.append(part_attribute.PartAttribute(parameter, lower_limit, upper_limit))
 
 		# execute over first 10 serial numbers.
 		# they are the oldest, holding ~40 cycle history relative to the next 10 which have only about 15 cycles.
@@ -55,6 +55,6 @@ def load(training_file):
 		    y = data_sn.loc[data_sn.Parameter == parameter]['Measurement AVG']
 
 		    # load sn data into its parameter
-		    p[-1].serial_numbers.append(property.SerialNumber(name=label, x=x, y=y))
+		    p[-1].serial_numbers.append(part_attribute.SerialNumber(name=label, cycle=x, measurement=y))
 
 	return p
