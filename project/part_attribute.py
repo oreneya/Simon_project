@@ -15,14 +15,15 @@ class PartAttribute(object):
 	
 	def standardize(self):
 		"""Standardize training data for neural network and keep operator/inverse for future."""
-		X = np.array(self.data_to_train)
-		X_std = (X.ravel() - np.min(X)) / (np.max(X) - np.min(X))
-		rmin, rmax = -1, 1 # range due to tanh in the LSTM (default)
-		X_scaled = X_std * (rmax - rmin) + rmin
-		#scaler = MinMaxScaler(feature_range=(-1, 1)) # range due to tanh in the LSTM (default)
-		#scaler.fit(self.data_to_train)
-		self.data_to_train = X_scaled
-	
+		self.scaler = MinMaxScaler(feature_range=(-1, 1)) # range due to tanh in the LSTM (default)
+		data = np.concatenate([np.concatenate(self.x_train), np.concatenate(self.y_train)])
+		self.scaler.fit(data.reshape(-1,1))
+		scaled = self.scaler.transform(data.reshape(-1,1))
+		x_scaled = scaled[:len(self.x_train)*len(self.x_train[0])]
+		y_scaled = scaled[len(self.x_train)*len(self.x_train[0]):]
+		self.x_train = np.reshape(x_scaled, (len(self.x_train), len(self.x_train[0])))
+		self.y_train = np.reshape(y_scaled, (len(self.y_train), len(self.y_train[0])))
+			
 	def train(self, sn_train_idx, sn_valid_idx):
 		"""Train method takes several time-serieses to train on, and others to validate on."""
 		self.data_to_train = []
@@ -31,8 +32,6 @@ class PartAttribute(object):
 		# fill data structure to train with
 		for i in sn_train_idx:
 			self.data_to_train.append(list(self.serial_numbers[i].measurement.values))
-		
-		self.standardize()
 		
 		# fill data structure to validate with
 		self.data_to_validate = list(self.serial_numbers[sn_valid_idx].measurement.values)
@@ -49,9 +48,14 @@ class PartAttribute(object):
 				x_train.append(sn[i:i+lin])
 				y_train.append(sn[i+lin:i+lin+lout])
 		
-		x_train = np.reshape(x_train, (len(x_train), lin, 1))
-		y_train = np.reshape(y_train, (len(y_train), lout))
-						
+		self.x_train = x_train
+		self.y_train = y_train
+		
+		self.standardize()
+
+		x_train = np.reshape(self.x_train, (len(x_train), lin, 1))
+		y_train = np.reshape(self.y_train, (len(y_train), lout))
+		
 		x_val = []
 		y_val = []
 		
