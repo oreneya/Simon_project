@@ -1,6 +1,7 @@
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
+from sklearn.preprocessing import MinMaxScaler
 
 class PartAttribute(object):
 	"""Each part attribute should have its own model.
@@ -12,6 +13,16 @@ class PartAttribute(object):
 		self.upper_limit = upper_limit
 		self.serial_numbers = []
 	
+	def standardize(self):
+		"""Standardize training data for neural network and keep operator/inverse for future."""
+		X = self.data_to_train
+		X_std = (X - min(X)) / (max(X) - min(X))
+		min, max = -1, 1 # range due to tanh in the LSTM (default)
+		X_scaled = X_std * (max - min) + min
+		#scaler = MinMaxScaler(feature_range=(-1, 1)) # range due to tanh in the LSTM (default)
+		#scaler.fit(self.data_to_train)
+		self.data_to_train = X_scaled
+	
 	def train(self, sn_train_idx, sn_valid_idx):
 		"""Train method takes several time-serieses to train on, and others to validate on."""
 		self.data_to_train = []
@@ -20,7 +31,9 @@ class PartAttribute(object):
 		# fill data structure to train with
 		for i in sn_train_idx:
 			self.data_to_train.append(list(self.serial_numbers[i].measurement.values))
-
+		
+		self.standardize()
+		
 		# fill data structure to validate with
 		self.data_to_validate = list(self.serial_numbers[sn_valid_idx].measurement.values)
 
@@ -32,7 +45,6 @@ class PartAttribute(object):
 		y_train = []
 		
 		for sn in self.data_to_train:
-			#sn_history = standardize(sn_history)
 			for i in range(1+len(sn[:-(lin+lout)])):
 				x_train.append(sn[i:i+lin])
 				y_train.append(sn[i+lin:i+lin+lout])
