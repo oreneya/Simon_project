@@ -12,14 +12,13 @@ To develop a program able to predict when a given physical part (i.e. has its ow
 
 ## Program's Workflow
 ## Model
-LSTM based, multi-step prediction.
-Input:
-Output:
+LSTM based, multi-step prediction, Currently fixed lengths for input array and for output array.
 
 ## Dependencies
 	* numpy
 	* pandas
 	* matplotlib
+	* scikit-learn
 	* keras 2.x.x
 	* tensorflow 1.x.x
 
