@@ -5,7 +5,7 @@ rcParams.update({'figure.autolayout': True})
 def data(attr):
 	
 	for sn in attr.serial_numbers:
-		plt.plot(sn.x, sn.y, 'o-', label=sn.name)
+		plt.plot(sn.cycle, sn.measurement, 'o-', label=sn.name)
 
 	plt.plot(plt.xlim(), [attr.lower_limit, attr.lower_limit], 'r--')
 	plt.plot(plt.xlim(), [attr.upper_limit, attr.upper_limit], 'r--')
