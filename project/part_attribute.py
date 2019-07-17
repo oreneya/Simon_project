@@ -30,21 +30,19 @@ class PartAttribute(object):
 		x = np.reshape(x_scaled, (len(x), len(x[0])))
 		y = np.reshape(y_scaled, (len(y), len(y[0])))
 			
-	def train(self, sn_train_idx, sn_valid_idx):
+	def train(self, sn_train_idx, sn_valid_idx, lin, lout):
 		"""Train method takes several time-serieses to train on, and others to validate on."""
 		self.data_to_train = []
 		self.data_to_validate = []
 
-		# fill data structure to train with
+		# fill in data structure to train with
 		for i in sn_train_idx:
 			self.data_to_train.append(list(self.serial_numbers[i].measurement.values))
 		
-		# fill data structure to validate with
+		# fill in data structure to validate with
 		self.data_to_validate = list(self.serial_numbers[sn_valid_idx].measurement.values)
 
 		# prepare data for supervised training
-		lin = 10 # length of time-series as input
-		lout = 8 # length of output vector
 		
 		x_train = []
 		y_train = []
