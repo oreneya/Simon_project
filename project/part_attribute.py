@@ -7,6 +7,7 @@ class PartAttribute(object):
 	"""Each part attribute should have its own model.
 	Each part has several attributes.
 	Each part attribute links to several serial numbers."""
+	
 	def __init__(self, name, lower_limit, upper_limit):
 		self.name = name
 		self.lower_limit = lower_limit
@@ -29,58 +30,56 @@ class PartAttribute(object):
 		y_scaled = scaled[len(x)*len(x[0]):]
 		x = np.reshape(x_scaled, (len(x), len(x[0])))
 		y = np.reshape(y_scaled, (len(y), len(y[0])))
+		
+		return x, y
 			
-	def train(self, sn_train_idx, sn_valid_idx, lin, lout):
-		"""Train method takes several time-serieses to train on, and others to validate on."""
-
-		# ------------------------ #
-		#    prepare train data    #
-		# ------------------------ #
-
-		self.data_to_train = []
+	def prepare_data(self, sn_idx, lin, lout, flag=None):
+		"""Prepare data for training."""
 		
-		# fill in data structure to train with
-		for i in sn_train_idx:
-			self.data_to_train.append(list(self.serial_numbers[i].measurement.values))
-		
-		x_train = []
-		y_train = []
-		
-		# transform data into supervised learning problem
-		for sn in self.data_to_train:
-			for i in range(len(sn[:-(lin+lout)])):
-				x_train.append(sn[i:i+lin])
-				y_train.append(sn[i+lin:i+lin+lout])
-		
-		self.standardize(x_train, y_train, 'train')
-
-		# reshape data - necessary for NN input shape
-		x_train = np.reshape(x_train, (len(x_train), lin, 1))
-		y_train = np.reshape(y_train, (len(y_train), lout))
-
-		# ----------------------------- #
-		#    prepare validation data    #
-		# ----------------------------- #
-		
-		self.data_to_validate = []
-
-		# fill in data structure to validate with
-		self.data_to_validate = list(self.serial_numbers[sn_valid_idx].measurement.values)
+		data = []
+		x = []
+		y = []
 				
-		x_val = []
-		y_val = []
+		if flag == 'train':
 		
-		# transform data into supervised learning problem
-		sn = self.data_to_validate
-		for i in range(len(sn[:-(lin+lout)])):
-			x_val.append(sn[i:i+lin])
-			y_val.append(sn[i+lin:i+lin+lout])
-		
-		self.standardize(x_val, y_val)
+			# fill in data structure
+			for i in sn_idx:
+				data.append(list(self.serial_numbers[i].measurement.values))
+
+			# transform data into supervised learning problem
+			for sn in data:
+				for i in range(len(sn[:-(lin+lout)])):
+					x.append(sn[i:i+lin])
+					y.append(sn[i+lin:i+lin+lout])
+
+		else:
+			
+			# fill in data structure
+			data = list(self.serial_numbers[sn_idx].measurement.values)
+			
+			# transform data into supervised learning problem
+			sn = data
+			for i in range(len(sn[:-(lin+lout)])):
+				x.append(sn[i:i+lin])
+				y.append(sn[i+lin:i+lin+lout])
+			
+		x, y = self.standardize(x, y, flag)
 		
 		# reshape data - necessary for NN input shape
-		x_val = np.reshape(x_val, (len(x_val), lin, 1))
-		y_val = np.reshape(y_val, (len(y_val), lout))
+		x = np.reshape(x, (len(x), lin, 1))
+		y = np.reshape(y, (len(y), lout))
+		
+		return x, y
+
+	def train(self, lin, lout, sn_train_idx, sn_val_idx):
+		"""Train method takes several time-series to train on, and others to validate on."""
+
+		# ------------------------------ #
+		#    prepare data for training   #
+		# ------------------------------ #
+
+		x_train, y_train = self.prepare_data(sn_train_idx, lin, lout, 'train')
+		x_val, y_val = self.prepare_data(sn_val_idx, lin, lout)
 		
 		# ----------- #
 		#    model    #
@@ -102,12 +101,17 @@ class PartAttribute(object):
 
 	def predict(self, data_to_predict):
 		"""Predict method takes one time-series to predict its future."""
+		
 		self.data_to_predict = data_to_predict
 
 class SerialNumber(object):
 	"""Class SerialNumber is for the historic data of specific physical part w.r.t some part attribute."""
+	
 	def __init__(self, name, cycle, measurement):
 		self.name = name
 		self.cycle = cycle
 		self.measurement = measurement
-		
+
+
+
+

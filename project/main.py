@@ -36,13 +36,17 @@ lout = 8 # length of output vector
 # leave-1-out CV
 attributes = []
 models = []
+
 for i in range(NOSN):
+
+	# save 1 serial number for validation
 	sn_valid_idx = i
 	sn_train_idx = np.delete(np.arange(NOSN), sn_valid_idx)
+
 	# train a model for part attribute "CDI - Upper Lip Radial Thickness"
 	for d in training_data:
 		if d.name == 'CDI - Upper Lip Radial Thickness':
-			attr, m = d.train(sn_train_idx, sn_valid_idx, lin, lout)
+			attr, m = d.train(lin, lout, sn_train_idx, sn_valid_idx)
 			attributes.append(attr)
 			models.append(m)
 
