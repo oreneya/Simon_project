@@ -32,21 +32,21 @@ class PartAttribute(object):
 			
 	def train(self, sn_train_idx, sn_valid_idx, lin, lout):
 		"""Train method takes several time-serieses to train on, and others to validate on."""
-		self.data_to_train = []
-		self.data_to_validate = []
 
+		# ------------------------ #
+		#    prepare train data    #
+		# ------------------------ #
+
+		self.data_to_train = []
+		
 		# fill in data structure to train with
 		for i in sn_train_idx:
 			self.data_to_train.append(list(self.serial_numbers[i].measurement.values))
 		
-		# fill in data structure to validate with
-		self.data_to_validate = list(self.serial_numbers[sn_valid_idx].measurement.values)
-
-		# prepare data for supervised training
-		
 		x_train = []
 		y_train = []
 		
+		# transform data into supervised learning problem
 		for sn in self.data_to_train:
 			for i in range(len(sn[:-(lin+lout)])):
 				x_train.append(sn[i:i+lin])
@@ -54,12 +54,23 @@ class PartAttribute(object):
 		
 		self.standardize(x_train, y_train, 'train')
 
+		# reshape data - necessary for NN input shape
 		x_train = np.reshape(x_train, (len(x_train), lin, 1))
 		y_train = np.reshape(y_train, (len(y_train), lout))
+
+		# ----------------------------- #
+		#    prepare validation data    #
+		# ----------------------------- #
 		
+		self.data_to_validate = []
+
+		# fill in data structure to validate with
+		self.data_to_validate = list(self.serial_numbers[sn_valid_idx].measurement.values)
+				
 		x_val = []
 		y_val = []
 		
+		# transform data into supervised learning problem
 		sn = self.data_to_validate
 		for i in range(len(sn[:-(lin+lout)])):
 			x_val.append(sn[i:i+lin])
@@ -67,17 +78,26 @@ class PartAttribute(object):
 		
 		self.standardize(x_val, y_val)
 		
+		# reshape data - necessary for NN input shape
 		x_val = np.reshape(x_val, (len(x_val), lin, 1))
 		y_val = np.reshape(y_val, (len(y_val), lout))
 		
-		# model
+		# ----------- #
+		#    model    #
+		# ----------- #
+		
 		num_units = 4 # number of neurons to the (currently only) hidden layer
-
+		
+		# configure NN architecture
 		model = Sequential()
 		model.add(LSTM(num_units, input_shape=(x_train.shape[1], 1)))
 		model.add(Dense(lout))
+		
 		model.compile(loss='mean_squared_error', optimizer='adam')
+		
+		# finally begin training
 		model.fit(x_train, y_train, epochs=20, validation_data=(x_val, y_val))
+		
 		return self, model
 
 	def predict(self, data_to_predict):
