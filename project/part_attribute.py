@@ -14,7 +14,8 @@ class PartAttribute(object):
 		self.serial_numbers = []
 	
 	def standardize(self):
-		"""Standardize training data for neural network and keep operator/inverse for future."""
+		"""Just a standardization of data for beacause... activation functions.
+		The flag will be set automatically to 'train' and then to 'validation' by the train method"""
 		self.scaler = MinMaxScaler(feature_range=(-1, 1)) # range due to tanh in the LSTM (default)
 		data = np.concatenate([np.concatenate(self.x_train), np.concatenate(self.y_train)])
 		self.scaler.fit(data.reshape(-1,1))
@@ -44,7 +45,7 @@ class PartAttribute(object):
 		y_train = []
 		
 		for sn in self.data_to_train:
-			for i in range(1+len(sn[:-(lin+lout)])):
+			for i in range(len(sn[:-(lin+lout)])):
 				x_train.append(sn[i:i+lin])
 				y_train.append(sn[i+lin:i+lin+lout])
 		
@@ -60,7 +61,7 @@ class PartAttribute(object):
 		y_val = []
 		
 		sn = self.data_to_validate
-		for i in range(1+len(sn[:-(lin+lout)])):
+		for i in range(len(sn[:-(lin+lout)])):
 			x_val.append(sn[i:i+lin])
 			y_val.append(sn[i+lin:i+lin+lout])
 		
@@ -74,7 +75,7 @@ class PartAttribute(object):
 		model.add(LSTM(num_units, input_shape=(x_train.shape[1], 1)))
 		model.add(Dense(lout))
 		model.compile(loss='mean_squared_error', optimizer='adam')
-		model.fit(x_train, y_train, epochs=10, validation_data=(x_val, y_val))
+		model.fit(x_train, y_train, epochs=20, validation_data=(x_val, y_val))
 		return self, model
 
 	def predict(self, data_to_predict):
