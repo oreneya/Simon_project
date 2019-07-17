@@ -21,7 +21,7 @@ Fig. 2: Trend Example
   - Output: Behavioral prediction in the form of a graph to demonstrate next steps of the part
   - Validation: Using a part with long cycle count for validation
 
-<img src=output.png align=“center” width=700>
+<img src=output_example.png align=“center” width=700>
 Fig. 3: Output Example (including the validation series)
 
 ## How Does the Data Looks Like?
