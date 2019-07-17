@@ -21,16 +21,22 @@ class PartAttribute(object):
 			data = np.concatenate([np.concatenate(x), np.concatenate(y)])
 			self.scaler.fit(data.reshape(-1,1))
 		
-		else:
+		elif flag == 'validation':
 			data = np.concatenate([np.concatenate(x), np.concatenate(y)])
+		
+		else:
+			data = np.array(x)
+			return self.scaler.transform(data.reshape(-1,1))			
 		
 		scaled = self.scaler.transform(data.reshape(-1,1))
 		x_scaled = scaled[:len(x)*len(x[0])]
 		y_scaled = scaled[len(x)*len(x[0]):]
 		x = np.reshape(x_scaled, (len(x), len(x[0])))
 		y = np.reshape(y_scaled, (len(y), len(y[0])))
+		
+		return x, y
 			
-	def train(self, sn_train_idx, sn_valid_idx, lin, lout):
+	def train(self, lin, lout, sn_train_idx, sn_valid_idx, epochs=5):
 		"""Train method takes several time-serieses to train on, and others to validate on."""
 
 		# ------------------------ #
@@ -52,7 +58,7 @@ class PartAttribute(object):
 				x_train.append(sn[i:i+lin])
 				y_train.append(sn[i+lin:i+lin+lout])
 		
-		self.standardize(x_train, y_train, 'train')
+		x_train, y_train = self.standardize(x_train, y_train, 'train')
 
 		# reshape data - necessary for NN input shape
 		x_train = np.reshape(x_train, (len(x_train), lin, 1))
@@ -76,7 +82,7 @@ class PartAttribute(object):
 			x_val.append(sn[i:i+lin])
 			y_val.append(sn[i+lin:i+lin+lout])
 		
-		self.standardize(x_val, y_val)
+		x_val, y_val = self.standardize(x_val, y_val, 'validation')
 		
 		# reshape data - necessary for NN input shape
 		x_val = np.reshape(x_val, (len(x_val), lin, 1))
@@ -96,7 +102,7 @@ class PartAttribute(object):
 		model.compile(loss='mean_squared_error', optimizer='adam')
 		
 		# finally begin training
-		model.fit(x_train, y_train, epochs=20, validation_data=(x_val, y_val))
+		model.fit(x_train, y_train, epochs=epochs, validation_data=(x_val, y_val))
 		
 		return self, model
 

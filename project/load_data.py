@@ -53,8 +53,19 @@ def load(training_file):
 
 		    x = data_sn.loc[data_sn.Parameter == parameter]['CycleCount']
 		    y = data_sn.loc[data_sn.Parameter == parameter]['Measurement AVG']
+		    
+		    # Get rid of duplicate lines (there are CycleCount duplicates)
+		    df = pd.concat([x, y], axis=1)
+		    df = df.drop_duplicates()
+		    x, y = df['CycleCount'], df['Measurement AVG']
 
 		    # load sn data into its parameter
 		    p[-1].serial_numbers.append(part_attribute.SerialNumber(name=label, cycle=x, measurement=y))
-
+		    
 	return p
+
+
+
+
+
+
