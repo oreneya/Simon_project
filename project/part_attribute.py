@@ -13,17 +13,22 @@ class PartAttribute(object):
 		self.upper_limit = upper_limit
 		self.serial_numbers = []
 	
-	def standardize(self):
-		"""Just a standardization of data for beacause... activation functions.
-		The flag will be set automatically to 'train' and then to 'validation' by the train method"""
-		self.scaler = MinMaxScaler(feature_range=(-1, 1)) # range due to tanh in the LSTM (default)
-		data = np.concatenate([np.concatenate(self.x_train), np.concatenate(self.y_train)])
-		self.scaler.fit(data.reshape(-1,1))
+	def standardize(self, x, y, flag=None):
+		"""Just a standardization of data beacause... activation functions."""
+		
+		if flag == 'train':
+			self.scaler = MinMaxScaler(feature_range=(-1, 1)) # range due to tanh in the LSTM (default)
+			data = np.concatenate([np.concatenate(x), np.concatenate(y)])
+			self.scaler.fit(data.reshape(-1,1))
+		
+		else:
+			data = np.concatenate([np.concatenate(x), np.concatenate(y)])
+		
 		scaled = self.scaler.transform(data.reshape(-1,1))
-		x_scaled = scaled[:len(self.x_train)*len(self.x_train[0])]
-		y_scaled = scaled[len(self.x_train)*len(self.x_train[0]):]
-		self.x_train = np.reshape(x_scaled, (len(self.x_train), len(self.x_train[0])))
-		self.y_train = np.reshape(y_scaled, (len(self.y_train), len(self.y_train[0])))
+		x_scaled = scaled[:len(x)*len(x[0])]
+		y_scaled = scaled[len(x)*len(x[0]):]
+		x = np.reshape(x_scaled, (len(x), len(x[0])))
+		y = np.reshape(y_scaled, (len(y), len(y[0])))
 			
 	def train(self, sn_train_idx, sn_valid_idx):
 		"""Train method takes several time-serieses to train on, and others to validate on."""
@@ -49,13 +54,10 @@ class PartAttribute(object):
 				x_train.append(sn[i:i+lin])
 				y_train.append(sn[i+lin:i+lin+lout])
 		
-		self.x_train = x_train
-		self.y_train = y_train
-		
-		self.standardize()
+		self.standardize(x_train, y_train, 'train')
 
-		x_train = np.reshape(self.x_train, (len(x_train), lin, 1))
-		y_train = np.reshape(self.y_train, (len(y_train), lout))
+		x_train = np.reshape(x_train, (len(x_train), lin, 1))
+		y_train = np.reshape(y_train, (len(y_train), lout))
 		
 		x_val = []
 		y_val = []
@@ -65,11 +67,13 @@ class PartAttribute(object):
 			x_val.append(sn[i:i+lin])
 			y_val.append(sn[i+lin:i+lin+lout])
 		
+		self.standardize(x_val, y_val)
+		
 		x_val = np.reshape(x_val, (len(x_val), lin, 1))
 		y_val = np.reshape(y_val, (len(y_val), lout))
 		
 		# model
-		num_units = 4 # number of neurons to the hidden layer
+		num_units = 4 # number of neurons to the (currently only) hidden layer
 
 		model = Sequential()
 		model.add(LSTM(num_units, input_shape=(x_train.shape[1], 1)))
