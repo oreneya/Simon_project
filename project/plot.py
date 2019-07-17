@@ -47,6 +47,6 @@ def manual(attr, series_in, series_out, predictions_mean, predictions_std, lin, 
 	plt.tick_params(axis='both', labelsize=15)
 	plt.grid(color='lightgray', linestyle='--')
 	
-	plt.save('output_example.png')
+	plt.savefig('output_example.png')
 
 	plt.show()
