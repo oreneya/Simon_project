@@ -36,7 +36,7 @@ lout = 8 # length of output time-series
 attribute = []
 models = []
 
-for i in range(NOSN):
+for i in range(NOSN)[:-1]:
 	
 	# save 1 serial number for validation
 	sn_valid_idx = i
@@ -46,7 +46,6 @@ for i in range(NOSN):
 	for d in training_data:
 		if d.name == 'CDI - Upper Lip Radial Thickness':
 			attr, m = d.train(lin, lout, sn_train_idx, sn_valid_idx, epochs=20)
-			attribute.append(attr)
 			models.append(m)
 
 # ------------------------------- #
@@ -55,11 +54,13 @@ for i in range(NOSN):
 
 # picking up some data as an example from validation data
 
-c = 4 # cycle to start from
-s = i # number of serial number
+c = 8 # cycle to start from
+s = 10 # number of serial number. This is the last one, kept for test
 
-input_series = attr.data_to_validate[c : c+lin]
-expected_output_series = attr.data_to_validate[c+lin : c+lin+lout]
+#input_series = attr.data_to_validate[c : c+lin]
+#expected_output_series = attr.data_to_validate[c+lin : c+lin+lout]
+input_series = list(attr.serial_numbers[s-1].measurement[c : c+lin])
+expected_output_series = list(attr.serial_numbers[s-1].measurement[c+lin : c+lin+lout])
 
 # standardize
 xs = attr.standardize(input_series, input_series)
@@ -85,7 +86,7 @@ plot.manual(attr,
 			expected_output_series,
 			predictions_mean[0],
 			predictions_std[0],
-			lin, lout, c, s)
+			lin, lout, c, s-1)
 
 
 

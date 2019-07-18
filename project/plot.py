@@ -49,4 +49,4 @@ def manual(attr, series_in, series_out, predictions_mean, predictions_std, lin, 
 	
 	plt.savefig('output_example.png')
 
-	plt.show()
+	plt.close()#show()
