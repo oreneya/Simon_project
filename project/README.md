@@ -22,19 +22,17 @@ Fig. 2: Trend Example
   - Validation: Using a part with long cycle count for validation
 
 <img src=output_example.png align=“center” width=700>
-Fig. 3: Output Example
+Fig. 3: Output Example of test sample
 
 ## How Does the Data Looks Like?
 
-Our data is composed out of 10 parts (Same Make and Model - different Serial Numbers) that ran through the machine in a long period of time (i.e CycleCount).
+Our data is composed out of 10 parts (Same Make and Model - different Serial Numbers) that ran through the machine in a long period of time (i.e CycleCount, around 30-40 for each part).
 
-Each part has 6 features (i.e measured parameters) that define the part's performance in the machine.
-Those part (Serial Numbers 1-10) were uses as the base line, training set, to our model's behavior.
-
-Additional 10 parts were tested (Serial Numbers 11-20) that had low CycleCount, shorter time series that will supply the testing data to our model. 
+Each part has 10 features (i.e measured parameters) that define the part's performance in the machine.
+Nine parts (Serial Numbers 1-9) were used for training with leave-1-out cross-validation. The last part was left for testing. 
 
 ## Model
-LSTM based, multi-step prediction, currently fixed lengths for input array and for output array.
+LSTM based, multi-step prediction, currently fixed lengths for input array and for output array. As per the cross-validation, there are 9 models trained, and inference is the mean of this ensemble.
 
 ## Dependencies
 	* numpy
